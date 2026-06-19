@@ -1,0 +1,2176 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RMCC 360° — M0 Command Center | BNI</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #060912;
+        --bg2: #0a0f1e;
+        --bg3: #0f1525;
+        --panel: #121828;
+        --panel2: #161e30;
+        --border: rgba(255, 255, 255, 0.07);
+        --border2: rgba(255, 255, 255, 0.12);
+        --orange: #e65c00;
+        --orange2: #ff7a1a;
+        --teal: #00d4b8;
+        --gold: #c9a84c;
+        --red: #e05252;
+        --red2: #ff6b6b;
+        --amber: #f0a500;
+        --green: #3dd68c;
+        --green2: #2ecc71;
+        --blue: #4a90d9;
+        --white: #ffffff;
+        --grey1: #e4e9f5;
+        --grey2: #8e96b0;
+        --grey3: #4a526a;
+        --sans: "Inter", system-ui, sans-serif;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--white);
+        font-family: var(--sans);
+        overflow: hidden;
+      }
+
+      /* ── LAYOUT ── */
+      #app {
+        display: grid;
+        grid-template-rows: 52px 1fr;
+        grid-template-columns: 200px 1fr;
+        height: 100vh;
+        width: 100vw;
+      }
+
+      /* ── TOP BAR ── */
+      #topbar {
+        grid-column: 1 / -1;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        gap: 16px;
+        position: relative;
+      }
+      #topbar::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--orange) 0%,
+          var(--teal) 50%,
+          transparent 100%
+        );
+        opacity: 0.6;
+      }
+      .topbar-logo {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--orange);
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .topbar-logo-sep {
+        width: 1px;
+        height: 20px;
+        background: var(--border2);
+      }
+      .topbar-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--white);
+      }
+      .topbar-sub {
+        font-size: 10px;
+        color: var(--grey3);
+      }
+      .topbar-spacer {
+        flex: 1;
+      }
+      .topbar-clock {
+        font-size: 11px;
+        color: var(--grey2);
+        font-variant-numeric: tabular-nums;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1px;
+      }
+      .topbar-clock .time-big {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--white);
+      }
+      .status-dot {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        color: var(--green);
+        font-weight: 600;
+      }
+      .status-dot::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: blink 2s ease-in-out infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .topbar-alert-btn {
+        background: rgba(224, 82, 82, 0.12);
+        border: 1px solid rgba(224, 82, 82, 0.3);
+        border-radius: 4px;
+        padding: 5px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--red2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.2s;
+      }
+      .topbar-alert-btn:hover {
+        background: rgba(224, 82, 82, 0.22);
+      }
+      .alert-count {
+        background: var(--red);
+        color: var(--white);
+        border-radius: 10px;
+        padding: 1px 6px;
+        font-size: 9px;
+        font-weight: 800;
+      }
+
+      /* ── SIDEBAR ── */
+      #sidebar {
+        background: var(--panel);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 12px 0;
+      }
+      .sidebar-section-label {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--grey3);
+        padding: 10px 16px 6px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 16px;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--grey2);
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          color 0.15s;
+        position: relative;
+        border-left: 2px solid transparent;
+      }
+      .nav-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--white);
+      }
+      .nav-item.active {
+        background: rgba(230, 92, 0, 0.08);
+        color: var(--white);
+        border-left-color: var(--orange);
+      }
+      .nav-icon {
+        font-size: 13px;
+        min-width: 16px;
+      }
+      .nav-badge {
+        margin-left: auto;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-size: 9px;
+        font-weight: 700;
+      }
+      .badge-red {
+        background: rgba(224, 82, 82, 0.2);
+        color: var(--red2);
+      }
+      .badge-amber {
+        background: rgba(240, 165, 0, 0.2);
+        color: var(--amber);
+      }
+      .badge-green {
+        background: rgba(61, 214, 140, 0.15);
+        color: var(--green);
+      }
+      .rag-indicator {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .rag-red {
+        background: var(--red);
+        box-shadow: 0 0 6px rgba(224, 82, 82, 0.6);
+      }
+      .rag-amber {
+        background: var(--amber);
+        box-shadow: 0 0 6px rgba(240, 165, 0, 0.5);
+      }
+      .rag-green {
+        background: var(--green);
+        box-shadow: 0 0 5px rgba(61, 214, 140, 0.4);
+      }
+      .sidebar-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 8px 0;
+      }
+      .sidebar-footer {
+        margin-top: auto;
+        padding: 12px 16px;
+        font-size: 9px;
+        color: var(--grey3);
+        line-height: 1.5;
+        border-top: 1px solid var(--border);
+      }
+
+      /* ── MAIN CONTENT ── */
+      #main {
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: var(--bg);
+      }
+
+      /* ── PAGE HEADER ── */
+      .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      .page-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--white);
+      }
+      .page-sub {
+        font-size: 11px;
+        color: var(--grey3);
+        margin-top: 2px;
+      }
+      .refresh-info {
+        font-size: 10px;
+        color: var(--grey3);
+        text-align: right;
+      }
+
+      /* ── SECTION LABEL ── */
+      .section-label {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--grey3);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      /* ── TOP METRICS ROW ── */
+      .top-metrics {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+      .metric-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 14px;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.2s;
+      }
+      .metric-card:hover {
+        border-color: var(--border2);
+      }
+      .metric-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 6px;
+      }
+      .metric-label {
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--grey3);
+      }
+      .metric-badge {
+        font-size: 8px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 10px;
+      }
+      .metric-value {
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--white);
+      }
+      .metric-unit {
+        font-size: 11px;
+        font-weight: 600;
+        margin-left: 2px;
+      }
+      .metric-sub {
+        font-size: 10px;
+        color: var(--grey3);
+        margin-top: 4px;
+      }
+      .metric-trend {
+        font-size: 10px;
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .trend-up {
+        color: var(--red2);
+      }
+      .trend-down {
+        color: var(--green);
+      }
+      .trend-flat {
+        color: var(--grey3);
+      }
+      .metric-bar {
+        margin-top: 8px;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--border);
+        position: relative;
+      }
+      .metric-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* ── MAIN GRID ── */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+      .main-grid-wide {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 12px;
+      }
+
+      /* ── PANEL CARD ── */
+      .panel-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .panel-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .panel-card-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--white);
+      }
+      .panel-card-sub {
+        font-size: 9px;
+        color: var(--grey3);
+      }
+
+      /* ── RAG HEATMAP ── */
+      .rag-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .rag-cell {
+        border-radius: 5px;
+        padding: 10px 8px;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          opacity 0.15s;
+        position: relative;
+        overflow: hidden;
+      }
+      .rag-cell:hover {
+        transform: translateY(-2px);
+      }
+      .rag-cell.rag-red-bg {
+        background: rgba(224, 82, 82, 0.12);
+        border: 1px solid rgba(224, 82, 82, 0.3);
+      }
+      .rag-cell.rag-amber-bg {
+        background: rgba(240, 165, 0, 0.1);
+        border: 1px solid rgba(240, 165, 0, 0.3);
+      }
+      .rag-cell.rag-green-bg {
+        background: rgba(61, 214, 140, 0.08);
+        border: 1px solid rgba(61, 214, 140, 0.2);
+      }
+      .rag-cell-icon {
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+      .rag-cell-name {
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--white);
+        margin-bottom: 3px;
+      }
+      .rag-cell-status {
+        font-size: 8px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .rag-cell.rag-red-bg .rag-cell-status {
+        color: var(--red2);
+      }
+      .rag-cell.rag-amber-bg .rag-cell-status {
+        color: var(--amber);
+      }
+      .rag-cell.rag-green-bg .rag-cell-status {
+        color: var(--green);
+      }
+      /* pulse ring on RED */
+      .rag-cell.rag-red-bg::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 8px;
+        border: 2px solid rgba(224, 82, 82, 0);
+        animation: ragPulse 2.5s ease-in-out infinite;
+      }
+      @keyframes ragPulse {
+        0%,
+        100% {
+          border-color: rgba(224, 82, 82, 0);
+        }
+        50% {
+          border-color: rgba(224, 82, 82, 0.5);
+        }
+      }
+
+      /* ── SPARKLINE ── */
+      .sparkline-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .sparkline-row:last-child {
+        border-bottom: none;
+      }
+      .spark-label {
+        font-size: 10px;
+        color: var(--grey2);
+        width: 100px;
+        flex-shrink: 0;
+      }
+      .spark-svg {
+        flex: 1;
+      }
+      .spark-value {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--white);
+        width: 52px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .spark-chg {
+        font-size: 9px;
+        width: 40px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      /* ── ALERTS PANEL ── */
+      .alert-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .alert-item {
+        background: var(--bg3);
+        border-radius: 4px;
+        padding: 10px 12px;
+        border-left: 3px solid;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .alert-item.sev-high {
+        border-left-color: var(--red);
+      }
+      .alert-item.sev-medium {
+        border-left-color: var(--amber);
+      }
+      .alert-item.sev-low {
+        border-left-color: var(--teal);
+      }
+      .alert-item-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .alert-item-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--white);
+      }
+      .alert-item-time {
+        font-size: 9px;
+        color: var(--grey3);
+      }
+      .alert-item-desc {
+        font-size: 10px;
+        color: var(--grey2);
+        line-height: 1.4;
+      }
+      .alert-item-tag {
+        font-size: 8px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 2px;
+      }
+      .alert-item.sev-high .alert-item-tag {
+        color: var(--red2);
+      }
+      .alert-item.sev-medium .alert-item-tag {
+        color: var(--amber);
+      }
+      .alert-item.sev-low .alert-item-tag {
+        color: var(--teal);
+      }
+
+      /* ── GAUGE ── */
+      .gauge-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .gauge-svg {
+        overflow: visible;
+      }
+      .gauge-label {
+        font-size: 9px;
+        color: var(--grey3);
+        text-align: center;
+      }
+
+      /* ── RISK APPETITE TABLE ── */
+      .appetite-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+      }
+      .appetite-table thead tr {
+        border-bottom: 1px solid var(--border);
+      }
+      .appetite-table thead th {
+        padding: 6px 8px;
+        text-align: left;
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--grey3);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .appetite-table tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+      }
+      .appetite-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+        cursor: pointer;
+      }
+      .appetite-table tbody td {
+        padding: 8px 8px;
+        color: var(--grey1);
+        vertical-align: middle;
+      }
+      .appetite-table tbody td:first-child {
+        color: var(--white);
+        font-weight: 500;
+      }
+      .rag-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .rag-pill::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+      }
+      .rag-pill.r {
+        background: rgba(224, 82, 82, 0.15);
+        color: var(--red2);
+      }
+      .rag-pill.r::before {
+        background: var(--red);
+      }
+      .rag-pill.a {
+        background: rgba(240, 165, 0, 0.12);
+        color: var(--amber);
+      }
+      .rag-pill.a::before {
+        background: var(--amber);
+      }
+      .rag-pill.g {
+        background: rgba(61, 214, 140, 0.1);
+        color: var(--green);
+      }
+      .rag-pill.g::before {
+        background: var(--green);
+      }
+
+      /* ── TREND BARS ── */
+      .trend-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .trend-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .trend-bar-label {
+        font-size: 10px;
+        color: var(--grey2);
+        width: 90px;
+        flex-shrink: 0;
+      }
+      .trend-bar-track {
+        flex: 1;
+        height: 20px;
+        background: var(--bg3);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .trend-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        padding: 0 8px;
+        font-size: 9px;
+        font-weight: 700;
+        color: var(--white);
+      }
+      .trend-bar-val {
+        font-size: 10px;
+        font-weight: 700;
+        width: 50px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      /* ── MODAL ── */
+      #modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(6, 9, 18, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      #modal-overlay.open {
+        display: flex;
+      }
+      #modal-box {
+        background: var(--panel2);
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        width: min(640px, 90vw);
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 28px;
+        position: relative;
+      }
+      #modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        color: var(--grey3);
+        font-size: 18px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: color 0.15s;
+      }
+      #modal-close:hover {
+        color: var(--white);
+      }
+      #modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: 4px;
+      }
+      #modal-subtitle {
+        font-size: 11px;
+        color: var(--grey3);
+        margin-bottom: 20px;
+      }
+
+      /* ── SCROLLBAR ── */
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 2px;
+      }
+
+      /* ── DATA FRESHNESS ── */
+      .data-freshness {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 9px;
+        color: var(--grey3);
+      }
+      .freshness-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- ── TOP BAR ── -->
+      <header id="topbar">
+        <div class="topbar-logo">
+          RMCC<span style="color: var(--teal)">360°</span>
+        </div>
+        <div class="topbar-logo-sep"></div>
+        <div>
+          <div class="topbar-title">M0 — Risk Command Center</div>
+          <div class="topbar-sub">
+            PT Bank Negara Indonesia (Persero) Tbk · Enterprise & Data Service
+            Dept.
+          </div>
+        </div>
+        <div class="topbar-spacer"></div>
+        <div class="status-dot">LIVE</div>
+        <div class="topbar-alert-btn" onclick="openAlertsModal()">
+          ⚠ Alerts Aktif
+          <span class="alert-count" id="alert-count-badge">3</span>
+        </div>
+        <div style="width: 1px; height: 28px; background: var(--border)"></div>
+        <div class="topbar-clock">
+          <div class="time-big" id="clock-time">00:00:00</div>
+          <div id="clock-date">Sabtu, 14 Jun 2025 · WIB</div>
+        </div>
+      </header>
+
+      <!-- ── SIDEBAR ── -->
+      <aside id="sidebar">
+        <div class="sidebar-section-label">Command Center</div>
+        <div class="nav-item active" onclick="setNav(this)">
+          <span class="nav-icon">⬡</span> M0 — 360° Overview
+        </div>
+
+        <div class="sidebar-section-label" style="margin-top: 8px">
+          Risk Modules
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Risiko Kredit',
+              'NPL Gross: 2.87% (↑ dari 2.74% bulan lalu). Loan-at-Risk (LaR): Rp 4.2T. CKPN Coverage: 84.3%. Segmen yang memberikan kontribusi NPL tertinggi: Segmen Komersial Menengah (kontribusi 38% dari total NPL). 10 debitur terbesar mewakili 22% dari total exposure kredit.',
+            )
+          "
+        >
+          <span class="nav-icon">📊</span> M1 — Kredit
+          <div class="rag-indicator rag-amber" title="AMBER"></div>
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Risiko Likuiditas',
+              'LCR Intra-Day: 131.4% (Threshold minimum: 100%). NSFR: 118.6%. Rasio AL/NCD: 114.2%. Rasio AL/DPK: 18.7%. Proyeksi intra-day liquidity gap dalam 4 jam ke depan: SURPLUS Rp 2.1T. Maturity profile: outflow 1-7 hari Rp 8.4T vs HQLA tersedia Rp 11.0T.',
+            )
+          "
+        >
+          <span class="nav-icon">💧</span> M2 — Likuiditas
+          <div class="rag-indicator rag-green" title="GREEN"></div>
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Risiko Pasar',
+              'NOP Valas (USD/IDR): +2.3% dari modal (limit: 20%). MTM Portofolio Obligasi: Rp 42.7T (unrealized gain Rp 1.2T). VaR 1-hari 99%: Rp 287M. Durasi portofolio: 3.4 tahun. Sensitivitas: kenaikan suku bunga 100bps = penurunan MTM Rp 1.45T.',
+            )
+          "
+        >
+          <span class="nav-icon">📈</span> M3 — Pasar
+          <div class="rag-indicator rag-green" title="GREEN"></div>
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Risiko Operasional',
+              'Insiden aktif hari ini: 2 (1 KRITIS — downtime channel mobile banking sejak 08:42 WIB, estimasi recovery 14:00 WIB). Kerugian operasional YTD: Rp 8.4M. SLA breach rate bulan ini: 1.8% (target: <2%). Error rate API mobile banking: 0.34% (↑ dari baseline 0.11%).',
+            )
+          "
+        >
+          <span class="nav-icon">⚙️</span> M4 — Operasional
+          <div class="rag-indicator rag-red" title="RED — Insiden aktif"></div>
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Risiko Hukum',
+              'Perkara aktif: 47 kasus. Nilai gugatan total: Rp 234M. Status: 28 dalam proses persidangan, 12 dalam mediasi, 7 menunggu putusan. Provisi biaya hukum: Rp 89M. Kasus dengan nilai gugatan tertinggi: Rp 45M (sengketa properti jaminan Cabang Jakarta Selatan).',
+            )
+          "
+        >
+          <span class="nav-icon">⚖️</span> M5 — Hukum
+          <div class="rag-indicator rag-green" title="GREEN"></div>
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Risiko Kepatuhan',
+              'Temuan audit open: 23 (5 HIGH, 11 MEDIUM, 7 LOW). Temuan past-due remediasi: 3. Regulatory deadline 30 hari ke depan: 4 laporan. Compliance score agregat: 87.4%. Catatan: Laporan LSMK Q2 2025 deadline 15 Juli 2025 — status persiapan: 60% selesai.',
+            )
+          "
+        >
+          <span class="nav-icon">📋</span> M6 — Kepatuhan
+          <div class="rag-indicator rag-amber" title="AMBER"></div>
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Risiko Strategi',
+              'Realisasi RBB YTD vs Target: Kredit 94.2% dari target, DPK 97.8% dari target, Fee Income 88.3% dari target. NIM: 4.87% (target 5.10% — gap 23bps). CIR: 43.2% (target <42% — melampaui batas atas). Market share kredit: 11.4% (Q4 2024: 11.6% — turun 20bps).',
+            )
+          "
+        >
+          <span class="nav-icon">🎯</span> M7 — Strategi
+          <div class="rag-indicator rag-amber" title="AMBER"></div>
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Risiko Reputasi',
+              'NPS nasabah: 52 (bulan lalu: 55 — turun 3 poin). Komplain bulan ini: 1,847 (↑12% MoM). Resolution rate dalam SLA: 91.4%. Media sentiment index: 62/100 (Neutral-Positif). Social media mention negatif hari ini: 234 (mayoritas terkait gangguan mobile banking).',
+            )
+          "
+        >
+          <span class="nav-icon">🌐</span> M8 — Reputasi
+          <div
+            class="rag-indicator rag-amber"
+            title="AMBER — Terpengaruh insiden M4"
+          ></div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-label">Regulasi</div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Status Kepatuhan Regulasi',
+              'POJK 18/2016: 8 domain risiko terpantau — COMPLIANT. POJK 11/2022: Data governance aktif, audit trail tersedia — COMPLIANT. BCBS 239: 12 dari 14 prinsip terpenuhi, 2 prinsip dalam progres implementasi. UU PDP 27/2022: Anonymization layer aktif, RLS dikonfigurasi — COMPLIANT. Laporan OJK berikutnya: LSMK Q2 2025 — 15 Juli 2025.',
+            )
+          "
+        >
+          <span class="nav-icon">📑</span> Status Regulasi
+          <span class="nav-badge badge-green">COMPLIANT</span>
+        </div>
+        <div
+          class="nav-item"
+          onclick="
+            showDrilldown(
+              'Early Warning System',
+              'EWS aktif memantau 3 indikator trending: (1) NPL Kredit Komersial Menengah menunjukkan tren naik 3 bulan berturut-turut — proyeksi NPL Gross +18bps dalam 60 hari jika tidak ada intervensi. (2) Complaint volume naik 12% MoM — potensi dampak reputasi jika insiden mobile banking tidak terselesaikan dalam 48 jam. (3) CIR telah melampaui target 3 bulan berturut-turut — perlu review efisiensi biaya operasional.',
+            )
+          "
+        >
+          <span class="nav-icon">⚡</span> Early Warning
+          <span class="nav-badge badge-amber">3 Signal</span>
+        </div>
+
+        <div class="sidebar-footer">
+          Data: Druid OLAP + Oracle 19c EDW<br />
+          Refresh: auto setiap 5 menit<br />
+          © BNI EDV — RMCC 360° v1.0
+        </div>
+      </aside>
+
+      <!-- ── MAIN ── -->
+      <main id="main">
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+          <div>
+            <div class="page-title">Risk Command Center — 360° Overview</div>
+            <div class="page-sub">
+              Posisi risiko agregat BNI per hari ini · Data via Apache Druid +
+              Oracle 19c EDW
+            </div>
+          </div>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: flex-end;
+              gap: 4px;
+            "
+          >
+            <div class="data-freshness">
+              <div class="freshness-dot"></div>
+              Data diperbarui 2 menit lalu
+            </div>
+            <div class="refresh-info">
+              Sumber: CBS, Treasury, HR, CRM, IT Monitor
+            </div>
+          </div>
+        </div>
+
+        <!-- TOP METRICS -->
+        <div>
+          <div class="section-label">Indikator Prudensial Utama</div>
+          <div class="top-metrics">
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <div class="metric-label">KPMM / CAR</div>
+                <div
+                  class="metric-badge"
+                  style="
+                    background: rgba(61, 214, 140, 0.15);
+                    color: var(--green);
+                  "
+                >
+                  AMAN
+                </div>
+              </div>
+              <div class="metric-value">
+                21.4<span class="metric-unit" style="color: var(--green)"
+                  >%</span
+                >
+              </div>
+              <div class="metric-sub">Min. Regulasi: 12.0%</div>
+              <div class="metric-bar">
+                <div
+                  class="metric-bar-fill"
+                  style="width: 71%; background: var(--green)"
+                ></div>
+              </div>
+              <div class="metric-trend trend-flat">▶ +0.3% MoM</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <div class="metric-label">LCR Intra-Day</div>
+                <div
+                  class="metric-badge"
+                  style="
+                    background: rgba(61, 214, 140, 0.15);
+                    color: var(--green);
+                  "
+                >
+                  COMPLIANT
+                </div>
+              </div>
+              <div class="metric-value">
+                131.4<span class="metric-unit" style="color: var(--green)"
+                  >%</span
+                >
+              </div>
+              <div class="metric-sub">Min. Regulasi: 100%</div>
+              <div class="metric-bar">
+                <div
+                  class="metric-bar-fill"
+                  style="width: 82%; background: var(--teal)"
+                ></div>
+              </div>
+              <div class="metric-trend trend-up">↑ +4.2% dari pagi</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <div class="metric-label">NPL Gross</div>
+                <div
+                  class="metric-badge"
+                  style="
+                    background: rgba(240, 165, 0, 0.15);
+                    color: var(--amber);
+                  "
+                >
+                  WATCH
+                </div>
+              </div>
+              <div class="metric-value">
+                2.87<span class="metric-unit" style="color: var(--amber)"
+                  >%</span
+                >
+              </div>
+              <div class="metric-sub">Threshold: 3.00%</div>
+              <div class="metric-bar">
+                <div
+                  class="metric-bar-fill"
+                  style="width: 57%; background: var(--amber)"
+                ></div>
+              </div>
+              <div class="metric-trend trend-up" style="color: var(--amber)">
+                ↑ +13bps MoM — Trending
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <div class="metric-label">NSFR</div>
+                <div
+                  class="metric-badge"
+                  style="
+                    background: rgba(61, 214, 140, 0.15);
+                    color: var(--green);
+                  "
+                >
+                  COMPLIANT
+                </div>
+              </div>
+              <div class="metric-value">
+                118.6<span class="metric-unit" style="color: var(--green)"
+                  >%</span
+                >
+              </div>
+              <div class="metric-sub">Min. Regulasi: 100%</div>
+              <div class="metric-bar">
+                <div
+                  class="metric-bar-fill"
+                  style="width: 74%; background: var(--green)"
+                ></div>
+              </div>
+              <div class="metric-trend trend-flat">▶ Stabil</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <div class="metric-label">Risk Score 360°</div>
+                <div
+                  class="metric-badge"
+                  style="
+                    background: rgba(240, 165, 0, 0.15);
+                    color: var(--amber);
+                  "
+                >
+                  MODERATE
+                </div>
+              </div>
+              <div class="metric-value" style="color: var(--amber)">
+                6.2<span
+                  class="metric-unit"
+                  style="color: var(--amber); font-size: 12px"
+                  >/10</span
+                >
+              </div>
+              <div class="metric-sub">Agregat 8 domain risiko</div>
+              <div class="metric-bar">
+                <div
+                  class="metric-bar-fill"
+                  style="
+                    width: 62%;
+                    background: linear-gradient(
+                      90deg,
+                      var(--green),
+                      var(--amber)
+                    );
+                  "
+                ></div>
+              </div>
+              <div class="metric-trend" style="color: var(--amber)">
+                ▼ M4 Operasional menaikkan skor
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RAG HEATMAP + ALERTS -->
+        <div class="main-grid-wide">
+          <!-- RAG HEATMAP -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div>
+                <div class="panel-card-title">
+                  Risk Appetite vs Aktual — RAG Heatmap
+                </div>
+                <div class="panel-card-sub">
+                  Klik domain untuk drill-down detail · POJK 18/2016 — 8 Domain
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center">
+                <span
+                  style="
+                    font-size: 9px;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                  "
+                  ><span
+                    style="
+                      width: 8px;
+                      height: 8px;
+                      border-radius: 50%;
+                      background: var(--red);
+                      display: inline-block;
+                    "
+                  ></span>
+                  Perlu Perhatian</span
+                >
+                <span
+                  style="
+                    font-size: 9px;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                  "
+                  ><span
+                    style="
+                      width: 8px;
+                      height: 8px;
+                      border-radius: 50%;
+                      background: var(--amber);
+                      display: inline-block;
+                    "
+                  ></span>
+                  Watch</span
+                >
+                <span
+                  style="
+                    font-size: 9px;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                  "
+                  ><span
+                    style="
+                      width: 8px;
+                      height: 8px;
+                      border-radius: 50%;
+                      background: var(--green);
+                      display: inline-block;
+                    "
+                  ></span>
+                  Normal</span
+                >
+              </div>
+            </div>
+            <div class="rag-grid">
+              <div
+                class="rag-cell rag-amber-bg"
+                onclick="
+                  showDrilldown(
+                    'Risiko Kredit',
+                    'NPL Gross: 2.87% (↑ dari 2.74% bulan lalu). Loan-at-Risk (LaR): Rp 4.2T. CKPN Coverage: 84.3%. Segmen yang memberikan kontribusi NPL tertinggi: Segmen Komersial Menengah (kontribusi 38% dari total NPL). 10 debitur terbesar mewakili 22% dari total exposure kredit.',
+                  )
+                "
+              >
+                <div class="rag-cell-icon">📊</div>
+                <div class="rag-cell-name">Kredit</div>
+                <div class="rag-cell-status">AMBER</div>
+              </div>
+              <div
+                class="rag-cell rag-green-bg"
+                onclick="
+                  showDrilldown(
+                    'Risiko Likuiditas',
+                    'LCR Intra-Day: 131.4% (Threshold minimum: 100%). NSFR: 118.6%. Rasio AL/NCD: 114.2%. Rasio AL/DPK: 18.7%. Proyeksi intra-day liquidity gap dalam 4 jam ke depan: SURPLUS Rp 2.1T. Maturity profile: outflow 1-7 hari Rp 8.4T vs HQLA tersedia Rp 11.0T.',
+                  )
+                "
+              >
+                <div class="rag-cell-icon">💧</div>
+                <div class="rag-cell-name">Likuiditas</div>
+                <div class="rag-cell-status">GREEN</div>
+              </div>
+              <div
+                class="rag-cell rag-green-bg"
+                onclick="
+                  showDrilldown(
+                    'Risiko Pasar',
+                    'NOP Valas (USD/IDR): +2.3% dari modal (limit: 20%). MTM Portofolio Obligasi: Rp 42.7T (unrealized gain Rp 1.2T). VaR 1-hari 99%: Rp 287M. Durasi portofolio: 3.4 tahun.',
+                  )
+                "
+              >
+                <div class="rag-cell-icon">📈</div>
+                <div class="rag-cell-name">Pasar</div>
+                <div class="rag-cell-status">GREEN</div>
+              </div>
+              <div
+                class="rag-cell rag-red-bg"
+                onclick="
+                  showDrilldown(
+                    'Risiko Operasional',
+                    '⚠ INSIDEN AKTIF: Downtime channel mobile banking sejak 08:42 WIB — estimasi recovery 14:00 WIB. Dampak: ~180.000 pengguna aktif terdampak. Tim IT dan vendor sedang dalam proses remediasi. SLA breach rate bulan ini: 1.8%. Kerugian operasional YTD: Rp 8.4M.',
+                  )
+                "
+              >
+                <div class="rag-cell-icon">⚙️</div>
+                <div class="rag-cell-name">Operasional</div>
+                <div class="rag-cell-status">RED — AKTIF</div>
+              </div>
+              <div
+                class="rag-cell rag-green-bg"
+                onclick="
+                  showDrilldown(
+                    'Risiko Hukum',
+                    'Perkara aktif: 47 kasus. Nilai gugatan total: Rp 234M. Status: 28 dalam proses persidangan, 12 dalam mediasi, 7 menunggu putusan. Kasus terbesar: Rp 45M sengketa properti jaminan.',
+                  )
+                "
+              >
+                <div class="rag-cell-icon">⚖️</div>
+                <div class="rag-cell-name">Hukum</div>
+                <div class="rag-cell-status">GREEN</div>
+              </div>
+              <div
+                class="rag-cell rag-amber-bg"
+                onclick="
+                  showDrilldown(
+                    'Risiko Kepatuhan',
+                    'Temuan audit open: 23 (5 HIGH, 11 MEDIUM, 7 LOW). Past-due remediasi: 3 item. Regulatory deadline 30 hari: 4 laporan. Compliance score: 87.4%. LSMK Q2 2025 deadline 15 Juli — 60% selesai.',
+                  )
+                "
+              >
+                <div class="rag-cell-icon">📋</div>
+                <div class="rag-cell-name">Kepatuhan</div>
+                <div class="rag-cell-status">AMBER</div>
+              </div>
+              <div
+                class="rag-cell rag-amber-bg"
+                onclick="
+                  showDrilldown(
+                    'Risiko Strategi',
+                    'Realisasi RBB YTD: Kredit 94.2%, DPK 97.8%, Fee Income 88.3% dari target. NIM: 4.87% vs target 5.10% (gap 23bps). CIR: 43.2% vs target <42%. Market share kredit turun 20bps MoM.',
+                  )
+                "
+              >
+                <div class="rag-cell-icon">🎯</div>
+                <div class="rag-cell-name">Strategi</div>
+                <div class="rag-cell-status">AMBER</div>
+              </div>
+              <div
+                class="rag-cell rag-amber-bg"
+                onclick="
+                  showDrilldown(
+                    'Risiko Reputasi',
+                    'NPS: 52 (↓3 poin MoM — terpengaruh insiden mobile banking). Komplain hari ini meningkat signifikan: +312% vs rata-rata harian normal, mayoritas terkait gangguan M-Banking. Sentiment negatif sosmed: 234 mention.',
+                  )
+                "
+              >
+                <div class="rag-cell-icon">🌐</div>
+                <div class="rag-cell-name">Reputasi</div>
+                <div class="rag-cell-status">AMBER</div>
+              </div>
+            </div>
+            <!-- Risk correlation note -->
+            <div
+              style="
+                background: rgba(224, 82, 82, 0.06);
+                border: 1px solid rgba(224, 82, 82, 0.2);
+                border-radius: 4px;
+                padding: 10px 12px;
+              "
+            >
+              <div
+                style="
+                  font-size: 9px;
+                  font-weight: 700;
+                  color: var(--red2);
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                  margin-bottom: 4px;
+                "
+              >
+                ⚠ Risiko Lintas Domain Terdeteksi
+              </div>
+              <div
+                style="font-size: 10px; color: var(--grey2); line-height: 1.5"
+              >
+                Insiden Operasional M4 (downtime mobile banking) mempengaruhi
+                domain lain: M8 Reputasi (complaint surge +312%) dan berpotensi
+                berdampak pada M2 Likuiditas (perilaku nasabah pasca insiden).
+                Pantau kedua domain ini dalam 24 jam ke depan.
+              </div>
+            </div>
+          </div>
+
+          <!-- ALERTS -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div>
+                <div class="panel-card-title">Alert Aktif</div>
+                <div class="panel-card-sub">
+                  Auto-generated · Threshold breach
+                </div>
+              </div>
+              <div style="font-size: 9px; color: var(--grey3)">
+                Update: 2 mnt lalu
+              </div>
+            </div>
+            <div class="alert-list">
+              <div class="alert-item sev-high">
+                <div class="alert-item-top">
+                  <div class="alert-item-title">🔴 Mobile Banking Downtime</div>
+                  <div class="alert-item-time">08:42 WIB</div>
+                </div>
+                <div class="alert-item-desc">
+                  Channel M-Banking down sejak 08:42 WIB. ~180K pengguna aktif
+                  terdampak. Estimasi recovery 14:00 WIB. Eskalasi ke Direktur
+                  IT.
+                </div>
+                <div class="alert-item-tag">
+                  M4 OPERASIONAL · KRITIKAL · SLA BREACH
+                </div>
+              </div>
+              <div class="alert-item sev-medium">
+                <div class="alert-item-top">
+                  <div class="alert-item-title">🟡 NPL Trending Naik</div>
+                  <div class="alert-item-time">07:15 WIB</div>
+                </div>
+                <div class="alert-item-desc">
+                  NPL Gross 2.87% mendekati threshold 3.0%. Tren naik 3 bulan
+                  berturut-turut. EWS memproyeksikan +18bps dalam 60 hari.
+                </div>
+                <div class="alert-item-tag">
+                  M1 KREDIT · MEDIUM · EARLY WARNING
+                </div>
+              </div>
+              <div class="alert-item sev-medium">
+                <div class="alert-item-top">
+                  <div class="alert-item-title">🟡 LSMK Q2 Deadline 15 Jul</div>
+                  <div class="alert-item-time">06:00 WIB</div>
+                </div>
+                <div class="alert-item-desc">
+                  Laporan LSMK Q2 2025 baru 60% selesai. Deadline 15 Juli 2025
+                  (31 hari lagi). Percepatan diperlukan untuk menghindari
+                  keterlambatan ke OJK.
+                </div>
+                <div class="alert-item-tag">
+                  M6 KEPATUHAN · MEDIUM · REGULATORY
+                </div>
+              </div>
+            </div>
+            <div style="text-align: center">
+              <button
+                onclick="openAlertsModal()"
+                style="
+                  background: none;
+                  border: 1px solid var(--border);
+                  border-radius: 4px;
+                  padding: 8px 16px;
+                  color: var(--grey2);
+                  font-size: 11px;
+                  cursor: pointer;
+                  font-family: var(--sans);
+                  transition: all 0.15s;
+                "
+                onmouseover="
+                  this.style.borderColor = 'var(--orange)';
+                  this.style.color = 'var(--white)';
+                "
+                onmouseout="
+                  this.style.borderColor = 'var(--border)';
+                  this.style.color = 'var(--grey2)';
+                "
+              >
+                Lihat Semua Alert →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRENDING + GAUGES -->
+        <div class="main-grid">
+          <!-- 30-day sparklines -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Trending 30 Hari — Key Metrics</div>
+              <div class="panel-card-sub">Sparkline harian</div>
+            </div>
+            <div id="sparklines-container"></div>
+          </div>
+
+          <!-- GAUGES -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Rasio Prudensial</div>
+              <div class="panel-card-sub">vs Threshold Regulasi</div>
+            </div>
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
+            >
+              <div class="gauge-wrap">
+                <svg
+                  class="gauge-svg"
+                  width="110"
+                  height="70"
+                  viewBox="0 0 110 70"
+                >
+                  <path
+                    d="M10,65 A50,50 0 0,1 100,65"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M10,65 A50,50 0 0,1 100,65"
+                    fill="none"
+                    stroke="var(--green)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                    stroke-dasharray="157"
+                    stroke-dashoffset="40"
+                  />
+                  <text
+                    x="55"
+                    y="62"
+                    text-anchor="middle"
+                    fill="var(--white)"
+                    font-size="16"
+                    font-weight="800"
+                    font-family="Inter"
+                  >
+                    21.4%
+                  </text>
+                </svg>
+                <div class="gauge-label">
+                  KPMM/CAR<br /><span style="color: var(--green)">Min 12%</span>
+                </div>
+              </div>
+              <div class="gauge-wrap">
+                <svg
+                  class="gauge-svg"
+                  width="110"
+                  height="70"
+                  viewBox="0 0 110 70"
+                >
+                  <path
+                    d="M10,65 A50,50 0 0,1 100,65"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M10,65 A50,50 0 0,1 100,65"
+                    fill="none"
+                    stroke="var(--teal)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                    stroke-dasharray="157"
+                    stroke-dashoffset="49"
+                  />
+                  <text
+                    x="55"
+                    y="62"
+                    text-anchor="middle"
+                    fill="var(--white)"
+                    font-size="16"
+                    font-weight="800"
+                    font-family="Inter"
+                  >
+                    131%
+                  </text>
+                </svg>
+                <div class="gauge-label">
+                  LCR<br /><span style="color: var(--teal)">Min 100%</span>
+                </div>
+              </div>
+              <div class="gauge-wrap">
+                <svg
+                  class="gauge-svg"
+                  width="110"
+                  height="70"
+                  viewBox="0 0 110 70"
+                >
+                  <path
+                    d="M10,65 A50,50 0 0,1 100,65"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M10,65 A50,50 0 0,1 100,65"
+                    fill="none"
+                    stroke="var(--amber)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                    stroke-dasharray="157"
+                    stroke-dashoffset="90"
+                  />
+                  <text
+                    x="55"
+                    y="62"
+                    text-anchor="middle"
+                    fill="var(--white)"
+                    font-size="16"
+                    font-weight="800"
+                    font-family="Inter"
+                  >
+                    2.87%
+                  </text>
+                </svg>
+                <div class="gauge-label">
+                  NPL Gross<br /><span style="color: var(--amber)"
+                    >Max 3.00%</span
+                  >
+                </div>
+              </div>
+              <div class="gauge-wrap">
+                <svg
+                  class="gauge-svg"
+                  width="110"
+                  height="70"
+                  viewBox="0 0 110 70"
+                >
+                  <path
+                    d="M10,65 A50,50 0 0,1 100,65"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M10,65 A50,50 0 0,1 100,65"
+                    fill="none"
+                    stroke="var(--green)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                    stroke-dasharray="157"
+                    stroke-dashoffset="46"
+                  />
+                  <text
+                    x="55"
+                    y="62"
+                    text-anchor="middle"
+                    fill="var(--white)"
+                    font-size="16"
+                    font-weight="800"
+                    font-family="Inter"
+                  >
+                    118%
+                  </text>
+                </svg>
+                <div class="gauge-label">
+                  NSFR<br /><span style="color: var(--green)">Min 100%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk appetite bars -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <div class="panel-card-title">Risk Appetite — Utilization</div>
+              <div class="panel-card-sub">% dari limit yang terpakai</div>
+            </div>
+            <div class="trend-bars">
+              <div class="trend-bar-row">
+                <div class="trend-bar-label">NPL Gross</div>
+                <div class="trend-bar-track">
+                  <div
+                    class="trend-bar-fill"
+                    style="width: 95.7%; background: var(--amber)"
+                  >
+                    95.7%
+                  </div>
+                </div>
+                <div class="trend-bar-val" style="color: var(--amber)">
+                  2.87%
+                </div>
+              </div>
+              <div class="trend-bar-row">
+                <div class="trend-bar-label">NOP Valas</div>
+                <div class="trend-bar-track">
+                  <div
+                    class="trend-bar-fill"
+                    style="width: 11.5%; background: var(--green)"
+                  >
+                    11.5%
+                  </div>
+                </div>
+                <div class="trend-bar-val" style="color: var(--green)">
+                  2.3%
+                </div>
+              </div>
+              <div class="trend-bar-row">
+                <div class="trend-bar-label">BMPK Single</div>
+                <div class="trend-bar-track">
+                  <div
+                    class="trend-bar-fill"
+                    style="width: 68%; background: var(--green)"
+                  >
+                    68%
+                  </div>
+                </div>
+                <div class="trend-bar-val" style="color: var(--green)">68%</div>
+              </div>
+              <div class="trend-bar-row">
+                <div class="trend-bar-label">BMPK Terkait</div>
+                <div class="trend-bar-track">
+                  <div
+                    class="trend-bar-fill"
+                    style="width: 42%; background: var(--green)"
+                  >
+                    42%
+                  </div>
+                </div>
+                <div class="trend-bar-val" style="color: var(--green)">42%</div>
+              </div>
+              <div class="trend-bar-row">
+                <div class="trend-bar-label">VaR / Modal</div>
+                <div class="trend-bar-track">
+                  <div
+                    class="trend-bar-fill"
+                    style="width: 28%; background: var(--green)"
+                  >
+                    28%
+                  </div>
+                </div>
+                <div class="trend-bar-val" style="color: var(--green)">
+                  0.4%
+                </div>
+              </div>
+              <div class="trend-bar-row">
+                <div class="trend-bar-label">SLA Breach</div>
+                <div class="trend-bar-track">
+                  <div
+                    class="trend-bar-fill"
+                    style="width: 90%; background: var(--red)"
+                  >
+                    90%
+                  </div>
+                </div>
+                <div class="trend-bar-val" style="color: var(--red)">1.8%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RISK APPETITE TABLE -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <div class="panel-card-title">
+              Risk Appetite Summary — 8 Domain POJK 18/2016
+            </div>
+            <div class="panel-card-sub">
+              Klik baris untuk detail domain · Data per hari ini
+            </div>
+          </div>
+          <table class="appetite-table">
+            <thead>
+              <tr>
+                <th>Domain Risiko</th>
+                <th>Indikator Kunci</th>
+                <th>Nilai Aktual</th>
+                <th>Threshold</th>
+                <th>Status</th>
+                <th>Tren MoM</th>
+                <th>PIC GM</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                onclick="
+                  showDrilldown(
+                    'Risiko Kredit',
+                    'NPL Gross: 2.87% mendekati threshold 3.0%. Tren naik 3 bulan. CKPN Coverage 84.3%. Konsentrasi: Segmen Komersial Menengah 38% dari total NPL.',
+                  )
+                "
+              >
+                <td>📊 Risiko Kredit</td>
+                <td>NPL Gross</td>
+                <td style="font-weight: 700; color: var(--amber)">2.87%</td>
+                <td>≤ 3.00%</td>
+                <td><span class="rag-pill a">AMBER</span></td>
+                <td style="color: var(--amber)">↑ +13bps</td>
+                <td style="color: var(--grey3)">GM Kredit</td>
+              </tr>
+              <tr
+                onclick="
+                  showDrilldown(
+                    'Risiko Likuiditas',
+                    'LCR 131.4%, NSFR 118.6%, AL/NCD 114.2%. Posisi likuiditas sangat memadai. Surplus likuiditas intra-day Rp 2.1T.',
+                  )
+                "
+              >
+                <td>💧 Risiko Likuiditas</td>
+                <td>LCR Intra-Day</td>
+                <td style="font-weight: 700; color: var(--green)">131.4%</td>
+                <td>≥ 100%</td>
+                <td><span class="rag-pill g">GREEN</span></td>
+                <td style="color: var(--green)">↑ +4.2%</td>
+                <td style="color: var(--grey3)">GM Tresuri</td>
+              </tr>
+              <tr
+                onclick="
+                  showDrilldown(
+                    'Risiko Pasar',
+                    'NOP 2.3% dari modal (limit 20%). MTM obligasi Rp 42.7T dengan unrealized gain Rp 1.2T. VaR 1-hari Rp 287M. Posisi sangat dalam batas aman.',
+                  )
+                "
+              >
+                <td>📈 Risiko Pasar</td>
+                <td>NOP Valas</td>
+                <td style="font-weight: 700; color: var(--green)">2.3%</td>
+                <td>≤ 20%</td>
+                <td><span class="rag-pill g">GREEN</span></td>
+                <td style="color: var(--grey3)">▶ Stabil</td>
+                <td style="color: var(--grey3)">GM Tresuri</td>
+              </tr>
+              <tr
+                onclick="
+                  showDrilldown(
+                    'Risiko Operasional',
+                    '⚠ INSIDEN AKTIF: Mobile banking downtime sejak 08:42. ~180K nasabah terdampak. SLA breach rate 1.8% mendekati batas 2%. Eskalasi ke Direktur IT sudah dilakukan.',
+                  )
+                "
+              >
+                <td>⚙️ Risiko Operasional</td>
+                <td>SLA Breach Rate</td>
+                <td style="font-weight: 700; color: var(--red)">1.8%</td>
+                <td>≤ 2.0%</td>
+                <td><span class="rag-pill r">RED</span></td>
+                <td style="color: var(--red)">↑ INSIDEN</td>
+                <td style="color: var(--grey3)">GM IT</td>
+              </tr>
+              <tr
+                onclick="
+                  showDrilldown(
+                    'Risiko Hukum',
+                    '47 perkara aktif. Nilai gugatan Rp 234M. Semua dalam batas provisi. Tidak ada perkara yang melebihi materiality threshold.',
+                  )
+                "
+              >
+                <td>⚖️ Risiko Hukum</td>
+                <td>Perkara Aktif</td>
+                <td style="font-weight: 700; color: var(--green)">47 kasus</td>
+                <td>≤ 100 kasus</td>
+                <td><span class="rag-pill g">GREEN</span></td>
+                <td style="color: var(--green)">↓ -3 kasus</td>
+                <td style="color: var(--grey3)">GM Hukum</td>
+              </tr>
+              <tr
+                onclick="
+                  showDrilldown(
+                    'Risiko Kepatuhan',
+                    '23 temuan audit open (5 HIGH). 3 item past-due remediasi perlu perhatian. LSMK Q2 2025 60% selesai — deadline 15 Juli. Percepatan diperlukan.',
+                  )
+                "
+              >
+                <td>📋 Risiko Kepatuhan</td>
+                <td>Compliance Score</td>
+                <td style="font-weight: 700; color: var(--amber)">87.4%</td>
+                <td>≥ 90%</td>
+                <td><span class="rag-pill a">AMBER</span></td>
+                <td style="color: var(--amber)">↓ -1.8%</td>
+                <td style="color: var(--grey3)">GM Kepatuhan</td>
+              </tr>
+              <tr
+                onclick="
+                  showDrilldown(
+                    'Risiko Strategi',
+                    'NIM 4.87% vs target 5.10% (gap 23bps). CIR 43.2% vs target <42%. Fee income tracking 88.3% dari target tahunan. Perlu review efisiensi biaya Q3.',
+                  )
+                "
+              >
+                <td>🎯 Risiko Strategi</td>
+                <td>RBB Achievement</td>
+                <td style="font-weight: 700; color: var(--amber)">94.2%</td>
+                <td>≥ 95%</td>
+                <td><span class="rag-pill a">AMBER</span></td>
+                <td style="color: var(--amber)">↓ -1.4%</td>
+                <td style="color: var(--grey3)">GM Strategi</td>
+              </tr>
+              <tr
+                onclick="
+                  showDrilldown(
+                    'Risiko Reputasi',
+                    'NPS 52 (↓3 poin — terpengaruh insiden M-Banking). Complaint hari ini +312% vs rata-rata harian. Media sentiment 62/100 (Neutral). Monitoring intensif 24 jam.',
+                  )
+                "
+              >
+                <td>🌐 Risiko Reputasi</td>
+                <td>NPS Score</td>
+                <td style="font-weight: 700; color: var(--amber)">52</td>
+                <td>≥ 55</td>
+                <td><span class="rag-pill a">AMBER</span></td>
+                <td style="color: var(--amber)">↓ -3 poin</td>
+                <td style="color: var(--grey3)">GM CRM</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- FOOTER -->
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: var(--grey3);
+            padding: 4px 0 16px;
+          "
+        >
+          <span
+            >RMCC 360° v1.0 · BNI Enterprise & Data Service Dept. (EDV) ·
+            BNI-EDV-KJN-2025-001</span
+          >
+          <span
+            >Data Source: Oracle 19c EDW + Apache Druid + Kafka · POJK 18/2016 ·
+            POJK 11/2022 · BCBS 239</span
+          >
+          <span id="footer-ts">Terakhir diperbarui: --</span>
+        </div>
+      </main>
+    </div>
+    <!-- /app -->
+
+    <!-- MODAL -->
+    <div id="modal-overlay" onclick="closeModal(event)">
+      <div id="modal-box">
+        <button id="modal-close" onclick="closeModal()">✕</button>
+        <div id="modal-title">Detail Domain Risiko</div>
+        <div id="modal-subtitle">
+          Data per hari ini · Apache Druid + Oracle 19c EDW
+        </div>
+        <div id="modal-content"></div>
+      </div>
+    </div>
+
+    <script>
+      // ── CLOCK ──
+      function updateClock() {
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        document.getElementById("clock-time").textContent =
+          pad(now.getHours()) +
+          ":" +
+          pad(now.getMinutes()) +
+          ":" +
+          pad(now.getSeconds());
+        const days = [
+          "Minggu",
+          "Senin",
+          "Selasa",
+          "Rabu",
+          "Kamis",
+          "Jumat",
+          "Sabtu",
+        ];
+        const months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "Mei",
+          "Jun",
+          "Jul",
+          "Agu",
+          "Sep",
+          "Okt",
+          "Nov",
+          "Des",
+        ];
+        document.getElementById("clock-date").textContent =
+          days[now.getDay()] +
+          ", " +
+          now.getDate() +
+          " " +
+          months[now.getMonth()] +
+          " " +
+          now.getFullYear() +
+          " · WIB";
+        document.getElementById("footer-ts").textContent =
+          "Terakhir diperbarui: " +
+          pad(now.getHours()) +
+          ":" +
+          pad(now.getMinutes()) +
+          ":" +
+          pad(now.getSeconds()) +
+          " WIB";
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // ── NAV ──
+      function setNav(el) {
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((i) => i.classList.remove("active"));
+        el.classList.add("active");
+      }
+
+      // ── SPARKLINES ──
+      function generateSparkData(base, volatility, trend, count = 30) {
+        const data = [];
+        let v = base;
+        for (let i = 0; i < count; i++) {
+          v += (Math.random() - 0.48) * volatility + trend;
+          v = Math.max(base * 0.85, Math.min(base * 1.15, v));
+          data.push(+v.toFixed(2));
+        }
+        return data;
+      }
+
+      function renderSparklineSVG(data, color, width = 140, height = 28) {
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const range = max - min || 1;
+        const step = width / (data.length - 1);
+        const pts = data.map((v, i) => [
+          i * step,
+          height - ((v - min) / range) * (height - 4) - 2,
+        ]);
+        const d = pts
+          .map(
+            (p, i) =>
+              (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1),
+          )
+          .join(" ");
+        return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="spark-svg">
+      <path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${pts[pts.length - 1][0]}" cy="${pts[pts.length - 1][1]}" r="2.5" fill="${color}"/>
+    </svg>`;
+      }
+
+      const sparkDefs = [
+        {
+          label: "NPL Gross (%)",
+          base: 2.74,
+          vol: 0.04,
+          trend: +0.005,
+          color: "var(--amber)",
+          unit: "%",
+          val: "2.87",
+          chg: "+13bps",
+          chgColor: "var(--amber)",
+        },
+        {
+          label: "LCR (%)",
+          base: 128,
+          vol: 2.0,
+          trend: +0.1,
+          color: "var(--green)",
+          unit: "%",
+          val: "131.4",
+          chg: "+4.2%",
+          chgColor: "var(--green)",
+        },
+        {
+          label: "NOP Valas (%)",
+          base: 2.2,
+          vol: 0.15,
+          trend: 0,
+          color: "var(--teal)",
+          unit: "%",
+          val: "2.3",
+          chg: "▶ Stbl",
+          chgColor: "var(--grey3)",
+        },
+        {
+          label: "KPMM (%)",
+          base: 21.1,
+          vol: 0.1,
+          trend: +0.01,
+          color: "var(--green)",
+          unit: "%",
+          val: "21.4",
+          chg: "+0.3%",
+          chgColor: "var(--green)",
+        },
+        {
+          label: "NPS Score",
+          base: 55,
+          vol: 1.5,
+          trend: -0.1,
+          color: "var(--amber)",
+          unit: "",
+          val: "52",
+          chg: "↓ -3",
+          chgColor: "var(--amber)",
+        },
+        {
+          label: "Compliance (%)",
+          base: 89,
+          vol: 0.5,
+          trend: -0.06,
+          color: "var(--amber)",
+          unit: "%",
+          val: "87.4",
+          chg: "↓-1.8%",
+          chgColor: "var(--amber)",
+        },
+      ];
+
+      const sparkContainer = document.getElementById("sparklines-container");
+      sparkDefs.forEach((s) => {
+        const data = generateSparkData(s.base, s.vol, s.trend);
+        sparkContainer.innerHTML += `
+      <div class="sparkline-row">
+        <div class="spark-label">${s.label}</div>
+        ${renderSparklineSVG(data, s.color)}
+        <div class="spark-value">${s.val}${s.unit}</div>
+        <div class="spark-chg" style="color:${s.chgColor};">${s.chg}</div>
+      </div>`;
+      });
+
+      // ── MODAL ──
+      function showDrilldown(title, content) {
+        document.getElementById("modal-title").textContent = title;
+        document.getElementById("modal-content").innerHTML =
+          `<div style="font-size:13px;color:var(--grey1);line-height:1.8;white-space:pre-wrap;">${content}</div>
+       <div style="margin-top:20px;padding:12px 16px;background:rgba(0,212,184,0.06);border:1px solid rgba(0,212,184,0.2);border-radius:6px;font-size:11px;color:var(--grey2);">
+         💡 Dalam implementasi penuh RMCC 360°, panel ini akan menampilkan chart interaktif, drill-down hingga level transaksi, historical trending, dan tombol eskalasi langsung ke PIC GM domain terkait.
+       </div>`;
+        document.getElementById("modal-overlay").classList.add("open");
+      }
+
+      function openAlertsModal() {
+        document.getElementById("modal-title").textContent =
+          "Semua Alert Aktif — RMCC 360°";
+        document.getElementById("modal-subtitle").textContent =
+          "3 alert aktif per saat ini · Auto-refresh setiap 5 menit";
+        document.getElementById("modal-content").innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="background:rgba(224,82,82,0.08);border:1px solid rgba(224,82,82,0.25);border-radius:6px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--red2);margin-bottom:6px;">🔴 KRITIKAL — Mobile Banking Downtime [08:42 WIB]</div>
+          <div style="font-size:11px;color:var(--grey1);line-height:1.7;">Channel Mobile Banking tidak dapat diakses sejak pukul 08:42 WIB. Estimasi ~180.000 pengguna aktif terdampak. Tim IT dan vendor sedang dalam proses remediasi. Estimasi recovery: 14:00 WIB. Status eskalasi: Direktur IT telah dihubungi. SLA breach counter: 5h 18m (threshold: 4h).</div>
+          <div style="margin-top:8px;font-size:10px;font-weight:600;color:var(--red2);">M4 OPERASIONAL · SLA BREACH · ESKALASI DIREKTUR IT</div>
+        </div>
+        <div style="background:rgba(240,165,0,0.07);border:1px solid rgba(240,165,0,0.25);border-radius:6px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:6px;">🟡 MEDIUM — NPL Trending Naik [07:15 WIB]</div>
+          <div style="font-size:11px;color:var(--grey1);line-height:1.7;">NPL Gross mencapai 2.87% (threshold: 3.00%) — hanya 13bps dari batas. Tren naik 3 bulan berturut-turut (+5bps, +4bps, +4bps). Early Warning System memproyeksikan NPL Gross +18bps dalam 60 hari jika tidak ada intervensi. Segmen Komersial Menengah perlu review kolektibilitas.</div>
+          <div style="margin-top:8px;font-size:10px;font-weight:600;color:var(--amber);">M1 KREDIT · EARLY WARNING · ACTION REQUIRED</div>
+        </div>
+        <div style="background:rgba(240,165,0,0.07);border:1px solid rgba(240,165,0,0.25);border-radius:6px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:6px;">🟡 MEDIUM — LSMK Q2 2025 Deadline 15 Juli [06:00 WIB]</div>
+          <div style="font-size:11px;color:var(--grey1);line-height:1.7;">Laporan Stabilitas dan Sistem Keuangan (LSMK) Q2 2025 baru terselesaikan 60% dari total konten yang dibutuhkan. Deadline pengiriman ke OJK: 15 Juli 2025 (31 hari dari sekarang). Berdasarkan kecepatan penyelesaian saat ini, diperlukan akselerasi untuk memenuhi deadline. PIC: GM Kepatuhan dan Tim SKMR.</div>
+          <div style="margin-top:8px;font-size:10px;font-weight:600;color:var(--amber);">M6 KEPATUHAN · REGULATORY DEADLINE · 31 HARI</div>
+        </div>
+      </div>`;
+        document.getElementById("modal-overlay").classList.add("open");
+      }
+
+      function closeModal(e) {
+        if (
+          !e ||
+          e.target === document.getElementById("modal-overlay") ||
+          e.target === document.getElementById("modal-close")
+        ) {
+          document.getElementById("modal-overlay").classList.remove("open");
+        }
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape")
+          closeModal({ target: document.getElementById("modal-overlay") });
+      });
+
+      // ── SIMULATED DATA REFRESH ──
+      let refreshCount = 0;
+      setInterval(() => {
+        refreshCount++;
+        // Tiny random fluctuation on LCR display to simulate live data
+        const lcr = (131.4 + (Math.random() - 0.5) * 0.4).toFixed(1);
+        // (visual effect only — in real RMCC this would re-query Druid)
+      }, 30000);
+    </script>
+  </body>
+</html>
